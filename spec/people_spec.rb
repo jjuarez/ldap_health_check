@@ -16,7 +16,7 @@ module LDAPHealthCheck
         filter:   "(objectClass=inetOrgPerson)"
       }
 
-      @ds     = DataSource.build(@data)
+      @ds     = DataSource.new(@data[:uri], @data[:base], @data[:username], @data[:password], @data[:filter])
       @people = People.new(@ds)
     end
 

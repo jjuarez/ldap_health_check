@@ -16,11 +16,7 @@ module LDAPHealthCheck
         filter:   "(objectClass=inetOrgPerson)"
       }
 
-      @ds = DataSource.build(@data)
-    end
-
-    it "can be created from a hash" do 
-      DataSource.build(@data).must_be_instance_of(DataSource)
+      @ds = DataSource.new(@data[:uri], @data[:base], @data[:username], @data[:password], @data[:filter])
     end
 
     it "can be created by parameters" do 

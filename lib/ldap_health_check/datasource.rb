@@ -8,17 +8,6 @@ module LDAPHealthCheck
 
     TLS_SCHEME = 'ldaps'
 
-    def self.build(parameters)
-
-      DataSource.new(
-        parameters[:uri],
-        parameters[:base], 
-        parameters[:username], 
-        parameters[:password], 
-        parameters[:filter]
-      )
-    end
-
     def initialize(uri, base, username, password, filter)
 
       parsed_uri    = URI.parse(uri)

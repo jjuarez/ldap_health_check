@@ -1,62 +1,57 @@
-$LOAD_PATH<< File.expand_path('../../lib', __FILE__)
-
-require 'sinatra/base'
-require 'yaml'
+require 'sinatra'
+require 'sinatra/config_file'
+require 'sinatra/cross_origin'
 require 'json'
+
+$LOAD_PATH<< File.expand_path('../../lib', __FILE__)
 require 'ldap_health_check/people'
 
 
 module LDAPHealthCheck
 
   class Application < Sinatra::Application
+    register Sinatra::ConfigFile
+    register Sinatra::CrossOrigin
 
     VERSION         = "1.0.0"
     VERSION_MESSAGE = { api_version: VERSION }
 
     configure do
+      config_file File.expand_path(ENV['APP_CONFIG_FILE'])
 
-      set :run,             false
-      set :logging,         true
-      set :root,            File.expand_path('../..', __FILE__)
+      set :run,     false
+      set :logging, true
 
-      set :config_filename, File.expand_path(File.join(settings.root, 'config', 'config.yaml'))
-      set :config,          YAML.load(IO.read(settings.config_filename))[settings.environment]
+      enable :cross_origin
+      set :allow_origin,      :any
+      set :allow_methods,     [:get]
+      set :allow_credentials, true
+      set :max_age,           '1728000'
+      set :expose_headers,    ['Content-Type']
+
     end
 
     helpers do
-
-      def return_error(http_error, message)
+      def return_response(http_code, message, data=[])
         {
-          http_error: http_error,
-          route: env['REQUEST_PATH'],
-          message: message
-        }.to_json()
-      end
-  
-      def return_response(http_error, data)
-        {
-          http_error: http_error,
-          route: env['REQUEST_PATH'],
-          people: data
+          http_code: http_code,
+          route:     env['REQUEST_PATH'],
+          message:   message,
+          people:    data
         }.to_json()
       end
     end
 
     error do
-      return_error(500, 'Opps! this is an error')
+      return_response(500, 'Because shit happens...')
     end
 
     not_found do
-      return_error(404, 'Resource not found')
+      return_response(404, 'Resource not found')
     end
 
     before do
       content_type :json
-      headers "#{settings.config[:custom_header_key]}" => "#{settings.config[:custom_header_value]}"
-    end
-
-    get '/' do
-      redirect('/api/v1', 301)
     end
 
     get '/api/v1' do
@@ -65,23 +60,23 @@ module LDAPHealthCheck
 
     get '/api/v1/people' do
   
-      data = People.new(DataSource.build(settings.config)).find_all()
+      ds   = DataSource.new(settings.uri, settings.base, settings.username, settings.password, settings.filter)
+      data = People.new(ds).find_all()
 
-      logger.info("Number of people in your query: #{data.length}")
-
-      halt(404, "/api/v1/people") if data.empty?
-      return_response(200, data)
+      halt(404) if data.empty?
+      logger.info("People that match your query: #{data.length}")
+      return_response(200, 'ok', data)
     end
 
     get '/api/v1/people/:uid' do
 
       uid  = params[:uid]
-      data = People.new(DataSource.build(settings.config)).find_by_uid(uid)
+      ds   = DataSource.new(settings.uri, settings.base, settings.username, settings.password, settings.filter)
+      data = People.new(ds).find_by_uid(uid)
 
-      logger.info("Person: #{data.to_json()}")
-
-      halt(404, "/api/v1/people/#{uid}") if data.empty?
-      return_response(200, data)
+      halt(404) if data.empty?
+      logger.info("Person: #{data.first.dn}")
+      return_response(200, 'Ok', data)
     end
   end
 end
