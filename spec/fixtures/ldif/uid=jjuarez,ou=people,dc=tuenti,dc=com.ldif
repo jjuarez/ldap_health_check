@@ -1,0 +1,11 @@
+dn: uid=jjuarez,ou=people,dc=tuenti,dc=com
+uid: jjuarez
+title: Senior SRE Engineer
+objectClass: inetOrgPerson
+sn: Juarez Martinez
+mail: jjuarez@tuenti.com
+ou: Engineering
+cn: Javier Juarez Martinez
+st: Leganes
+postalCode: 28918
+givenName: Javier
