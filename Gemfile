@@ -1,8 +1,14 @@
-# A sample Gemfile
 source 'https://rubygems.org'
 
 gem 'sinatra'
-gem 'json'
 gem 'net-ldap'
+gem 'json'
 gem 'foreman'
-gem 'thin'
+
+group :development do
+  gem 'rake'
+  gem 'thin'
+  gem 'shotgun'
+  gem 'minitest'
+  gem 'pry'
+end
