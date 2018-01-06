@@ -17,6 +17,8 @@ module LDAPHealthCheck
     VERSION_MESSAGE = { api_version: VERSION }
 
     configure do
+      fail("You should to configure the 'APP_CONFIG_FILE' environment variable") unless ENV['APP_CONFIG_FILE']
+
       config_file File.expand_path(ENV['APP_CONFIG_FILE'])
 
       set :run,     false
