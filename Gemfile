@@ -1,16 +1,17 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'sinatra-contrib'
-gem 'sinatra-cross_origin'
-gem 'net-ldap', "~>0.16"
-gem 'json'
-gem 'foreman'
+gem 'sinatra', '~>2.0'
+gem 'sinatra-contrib', '~>2.0'
+gem 'sinatra-cross_origin', '~>0.4'
+gem 'net-ldap', '~>0.16'
+gem 'json', '~>2.1'
 
 group :development do
-  gem 'rake'
-  gem 'thin'
   gem 'shotgun'
-  gem 'minitest'
   gem 'pry'
+end
+
+group :test do
+  gem 'rake'
+  gem 'minitest'
 end
