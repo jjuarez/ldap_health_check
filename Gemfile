@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'sinatra', '~>2.0'
+gem 'sinatra', '~>2.0.2'
 gem 'sinatra-contrib', '~>2.0'
 gem 'sinatra-cross_origin', '~>0.4'
 gem 'rack', '>=2.1.4'
